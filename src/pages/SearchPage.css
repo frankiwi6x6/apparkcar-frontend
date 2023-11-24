@@ -1,0 +1,26 @@
+/* En tu archivo CSS o en el lugar donde definas tus estilos */
+
+/* Estilo para la barra de búsqueda */
+ion-searchbar {
+    border: none; /* Sin borde */
+    border-radius: 10px; /* Esquinas redondeadas */
+    margin: 10px; /* Márgenes */
+  }
+  
+  /* Estilo para la lista de resultados */
+  ion-list {
+    margin: 10px; /* Márgenes */
+  }
+  
+  /* Estilo para cada elemento de la lista */
+  ion-item {
+    border-radius: 10px; /* Esquinas redondeadas */
+    margin-bottom: 10px; /* Espacio entre elementos */
+    padding: 10px; /* Relleno interno */
+  }
+  
+  /* Estilo para el texto en cada elemento de la lista */
+  ion-label {
+    font-weight: bold; /* Texto en negrita */
+  }
+  
