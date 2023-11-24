@@ -13,9 +13,6 @@ import { IonReactRouter } from '@ionic/react-router';
 import { ellipse, home, person, search, square, triangle } from 'ionicons/icons';
 import LoginPage from './pages/LoginPage';
 
-import Tab1 from './pages/Tab1';
-import Tab2 from './pages/Tab2';
-import Tab3 from './pages/Tab3';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -42,7 +39,7 @@ import MyProfilePage from './pages/MyProfilePage';
 
 setupIonicReact();
 
-const currentUser = localStorage.getItem('currentUser');
+
 
 const App: React.FC = () => (
   <IonApp>
