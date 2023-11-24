@@ -1,5 +1,6 @@
 import React from 'react';
 import { IonContent, IonPage, IonHeader, IonToolbar, IonTitle } from '@ionic/react';
+const currentUser = localStorage.getItem('currentUser');
 
 const HomePage: React.FC = () => (
   <IonPage>
