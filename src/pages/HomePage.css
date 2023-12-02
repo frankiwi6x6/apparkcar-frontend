@@ -1,0 +1,21 @@
+.mapa {
+    background-color: floralwhite;
+    height: 30rem;
+    width: 100%;
+
+    &.mapa p {
+        color: black;
+        font-style: oblique;
+        font-weight: bolder;
+    }
+}
+
+.boton-inferior {
+    position: fixed;
+    width: 50px;
+    height: 50px;
+    bottom: 20px;
+    right: 20px;
+    text-align: center;
+    font-size: x-large;
+}

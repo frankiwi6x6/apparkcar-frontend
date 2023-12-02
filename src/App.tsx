@@ -37,6 +37,7 @@ import SearchPage from './pages/SearchPage';
 import ProfilePage from './pages/ProfilePage';
 import MyProfilePage from './pages/MyProfilePage';
 import RegisterPage from './pages/RegisterPage';
+import AddEstacionamientoPage from './pages/AddEstacionamientoPage';
 setupIonicReact();
 
 
@@ -47,6 +48,7 @@ const App: React.FC = () => (
       <IonRouterOutlet>
         <Route path="/" component={LoginPage} exact={true} />
         <Route path="/register" component={RegisterPage} exact={true} />
+        <Route path="/add-estacionamiento" component={AddEstacionamientoPage} exact={true} />
         <Route path="/tabs" render={() => <Redirect to="/tabs/home" />} exact={true} />
         <IonTabs>
           <IonRouterOutlet>
