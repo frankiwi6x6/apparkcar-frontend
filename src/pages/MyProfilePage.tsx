@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { IonContent, IonPage, IonHeader, IonToolbar, IonTitle, IonAvatar, IonLabel, IonButton, IonText, IonIcon } from '@ionic/react';
 import { useParams } from 'react-router-dom';
 import './MyProfilePage.css';
-import { camera, pencil } from 'ionicons/icons';
+import { camera, exit, pencil } from 'ionicons/icons';
 
 const MyProfilePage: React.FC = () => {
     const user = JSON.parse(localStorage.getItem('currentUser') ?? "{}");
@@ -32,6 +32,11 @@ const MyProfilePage: React.FC = () => {
     const changeProfilePic = () => {
         console.log("Change Profile Pic");
     }
+    const handleLogout = () => {
+        localStorage.removeItem('currentUser');
+        window.location.href = '/';
+    }
+
 
     return (
         <IonPage>
@@ -41,6 +46,10 @@ const MyProfilePage: React.FC = () => {
                 </IonToolbar>
             </IonHeader>
             <IonContent className="ion-padding ion-content-center ion-text-center">
+                <IonButton className='button-logout' fill="clear" color='danger'onClick={handleLogout}>
+                    
+                    <IonIcon icon={exit} />
+                </IonButton>
                 {userData && (
                     <>
                         <div className='my-profile-container' onClick={changeProfilePic}>

@@ -9,5 +9,6 @@ export interface Estacionamiento {
     longitud: number,
     precio: number,
     capacidad: number,
-    estado: boolean
+    estado: boolean,
+    distancia: string,
   }

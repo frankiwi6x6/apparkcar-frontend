@@ -7,16 +7,16 @@ const AddEstacionamientoPage: React.FC = () => {
 
     const obtenerIdDueno = () => {
         const usuarioString = localStorage.getItem('currentUser');
-    
+
         if (usuarioString) {
             const usuario = JSON.parse(usuarioString);
             const id = usuario && usuario.usuario && usuario.usuario.id;
-    
+
             if (id) {
                 return id;
             }
         }
-    
+
         // Manejar el caso en el que el localStorage está vacío o no tiene el formato esperado
         console.error('Error al obtener el ID del dueño');
         return null; // Otra acción adecuada según tu lógica
@@ -37,9 +37,8 @@ const AddEstacionamientoPage: React.FC = () => {
             });
 
             // Obtener el input de tipo file
-            const imagenesInput = document.querySelector('input[type="file"]');
+            const imagenesInput = document.getElementById('imagenes') as HTMLInputElement;
 
-            // Agregar archivos al FormData
             if (imagenesInput?.files) {
                 for (let i = 0; i < imagenesInput.files.length; i++) {
                     formData.append('imagenes', imagenesInput.files[i]);
