@@ -105,7 +105,7 @@ const HistoryPage: React.FC = () => {
                                 <IonButton onClick={() => handlePayment(reserva.id)}>{isSmallScreen?"$" :"Pagar"}</IonButton>
                             </IonCol>
                         </IonRow>
-                    </IonCard>
+                    </IonCard> 
 
                 ))}
             </IonContent>

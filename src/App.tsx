@@ -56,7 +56,7 @@ const App: React.FC = () => (
           <IonRouterOutlet>
             <Route path="/tabs/home" component={HomePage} />
             <Route path="/tabs/search" component={SearchPage} />
-            <Route path="/tabs/search/:username" component={ProfilePage} />
+            <Route path="/u/:username" component={ProfilePage} exact={true}/>
             <Route path="/tabs/my-profile" component={MyProfilePage} />
           </IonRouterOutlet>
           <IonTabBar slot="bottom">

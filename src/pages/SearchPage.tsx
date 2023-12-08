@@ -1,4 +1,4 @@
-import {api} from '../environment'
+import { api } from '../environment'
 import React, { useState } from 'react';
 import { IonContent, IonPage, IonHeader, IonToolbar, IonTitle, IonSearchbar, IonList, IonItem, IonLabel, IonText, IonAvatar } from '@ionic/react';
 import { useHistory } from 'react-router-dom';  // Importa useHistory de react-router-dom
@@ -39,7 +39,7 @@ const SearchPage: React.FC = () => {
 
   // Nueva función para manejar la redirección a la página de perfil del usuario
   const redirectToUserProfile = (username: string) => {
-    history.push(`/tabs/search/${username}`);
+    history.push(`/u/${username}`);
   };
 
   return (
@@ -62,6 +62,7 @@ const SearchPage: React.FC = () => {
               </IonAvatar>
               <IonLabel className="usuario-label">{usuario.username}</IonLabel>
             </IonItem>
+
           ))}
         </IonList>
       </IonContent>

@@ -4,7 +4,6 @@ import { bicycle, car } from "ionicons/icons"
 
 interface Props {
     estacionamiento: any;
-    onPress: () => void;
 }
 
 const ParkingCard = ({ estacionamiento }: Props) => {
