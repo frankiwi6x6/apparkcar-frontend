@@ -1,3 +1,4 @@
+import {api} from '../environment'
 import React, { useState } from 'react';
 import { IonContent, IonPage, IonHeader, IonToolbar, IonTitle, IonSearchbar, IonList, IonItem, IonLabel, IonText, IonAvatar } from '@ionic/react';
 import { useHistory } from 'react-router-dom';  // Importa useHistory de react-router-dom
@@ -11,7 +12,7 @@ const SearchPage: React.FC = () => {
 
   const delayedSearch = async (text: string) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/gestion/usuario/buscar/${text}`);
+      const response = await fetch(`${api.USER_URL}/gestion/usuario/buscar/${text}`);
       const data = await response.json();
 
       if (response.ok) {

@@ -1,121 +1,162 @@
+import { api } from '../environment'
 import React from 'react';
-import { IonButton, IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonLabel, IonItem, IonTextarea, IonCheckbox } from "@ionic/react";
+import {
+  IonButton,
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonInput,
+  IonLabel,
+  IonItem,
+  IonRadioGroup,
+  IonRadio,
+  IonButtons,
+  IonBackButton,
+} from "@ionic/react";
 import { useForm } from 'react-hook-form';
+interface Estacionamiento {
+  "id_dueno": number,
+  "titulo": string,
+  "descripcion": string,
+  "tipo": string,
+  "latitud": number,
+  "longitud": number,
+  "precio": number,
+  "capacidad": number,
+  "estado": boolean
+}
 
 const AddEstacionamientoPage: React.FC = () => {
-    const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, setValue } = useForm();
 
-    const obtenerIdDueno = () => {
-        const usuarioString = localStorage.getItem('currentUser');
+  const [titulo, setTitulo] = React.useState<string>('');
+  const [descripcion, setDescripcion] = React.useState<string>('');
+  const [tipo, setTipo] = React.useState<string>('');
+  const [direccion, setDireccion] = React.useState<string>('');
+  const [latitud, setLatitud] = React.useState<number>(0);
+  const [longitud, setLongitud] = React.useState<number>(0);
+  const [precio, setPrecio] = React.useState<number>(0);
+  const [capacidad, setCapacidad] = React.useState<number>(0);
 
-        if (usuarioString) {
-            const usuario = JSON.parse(usuarioString);
-            const id = usuario && usuario.usuario && usuario.usuario.id;
 
-            if (id) {
-                return id;
-            }
-        }
 
-        // Manejar el caso en el que el localStorage está vacío o no tiene el formato esperado
-        console.error('Error al obtener el ID del dueño');
-        return null; // Otra acción adecuada según tu lógica
-    };
+  const onSubmit = async () => {
+    try {
+      // Obtén el usuario actual del almacenamiento local
+      const currentUser: any | null = JSON.parse(localStorage.getItem('currentUser') || 'null');
 
-    const onSubmit = async (data: any) => {
-        try {
-            // Agregar el ID del dueño a los datos del formulario (puedes obtener esto de donde sea necesario)
-            const idDueno = obtenerIdDueno(); // Reemplaza esto con tu lógica real
-            data.id_dueno = idDueno;
+      if (!currentUser) {
+        // Maneja la situación en la que no hay un usuario actual
+        console.error('No se encontró un usuario actual');
+        return;
+      }
+      const data: Estacionamiento = {
+        id_dueno: currentUser.id,
+        titulo: titulo,
+        descripcion: descripcion,
+        tipo: tipo,
+        latitud: latitud,
+        longitud: longitud,
+        precio: precio,
+        capacidad: capacidad,
+        estado: true
+      };
+      // Agrega el ID del dueño a los datos del formulario
 
-            // Crear un objeto FormData para enviar al servidor
-            const formData = new FormData();
 
-            // Agregar datos del formulario al FormData
-            Object.keys(data).forEach(key => {
-                formData.append(key, data[key]);
-            });
+      // Realiza la solicitud a la API para crear un estacionamiento
+      const response = await fetch(`${api.PARK_URL}/estacionamientos/crear/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
 
-            // Obtener el input de tipo file
-            const imagenesInput = document.getElementById('imagenes') as HTMLInputElement;
+      // Verifica si la solicitud fue exitosa (código de estado 2xx)
+      if (response.ok) {
+        // Maneja la respuesta exitosa
+        console.log('Estacionamiento añadido exitosamente');
+        window.location.href = '/tabs/home';
+      } else {
+        // Maneja errores de la respuesta
+        console.error('Error al añadir estacionamiento:', response.status, response.statusText);
+      }
+    } catch (error) {
+      // Maneja errores de la petición
+      console.error('Error de red:', error);
+    }
+  };
 
-            if (imagenesInput?.files) {
-                for (let i = 0; i < imagenesInput.files.length; i++) {
-                    formData.append('imagenes', imagenesInput.files[i]);
-                }
-            }
+  return (
+    <IonPage>
+      <IonHeader>
+        <IonToolbar>
+          <IonButtons slot="start">
+            <IonBackButton defaultHref="/tabs/home"></IonBackButton>
+          </IonButtons>
+          <IonTitle>Añadir un estacionamiento</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <IonItem>
+            <IonInput
+              id="titulo"
+              placeholder="Título"
+              onIonChange={(e) => setTitulo(e.detail.value!)} />
+          </IonItem>
+          <IonItem>
+            <IonInput
+              id="descripcion"
+              placeholder="Descripcion"
+              onIonChange={(e) => setDescripcion(e.detail.value!)} />
+          </IonItem>
+          <IonLabel>Seleccione que tipo de estacionamiento </IonLabel>
+          <IonItem>
+            <IonRadioGroup value="" onIonChange={
+              (e) => setTipo(e.detail.value!)
+            }>
+              <IonRadio value="Autos">Autos</IonRadio>
+              <br />
+              <IonRadio value="Motos">Motos</IonRadio>
 
-            // Enviar FormData al servidor, por ejemplo, utilizando fetch
-            const response = await fetch('http://127.0.0.1:8002/estacionamientos/crear/', {
-                method: 'POST',
-                body: formData,
-            });
+            </IonRadioGroup>
+          </IonItem>
+          <IonItem>
+            <IonInput
+              id="latitud"
+              placeholder="Latitud"
+              onIonChange={(e) => setLatitud(parseFloat(e.detail.value!))} />
+          </IonItem>
+          <IonItem>
+            <IonInput
+              id="longitud"
+              placeholder="Longitud"
+              onIonChange={(e) => setLongitud(parseFloat(e.detail.value!))} />
+          </IonItem>
+          <IonItem>
+            <IonInput
+              id="precio"
+              placeholder="Precio por hora"
+              onIonChange={(e) => setPrecio(parseFloat(e.detail.value!))} />
+          </IonItem>
+          <IonItem>
+            <IonInput
+              id="capacidad"
+              placeholder="Capacidad"
+              onIonChange={(e) => setCapacidad(parseFloat(e.detail.value!))} />
+          </IonItem>
 
-            if (response.ok) {
-                // Manejar la respuesta exitosa
-                console.log('Estacionamiento añadido exitosamente');
-            } else {
-                // Manejar errores de la respuesta
-                console.error('Error al añadir estacionamiento');
-            }
-        } catch (error) {
-            // Manejar errores de la petición
-            console.error('Error de red', error);
-        }
-    };
 
-    return (
-        <IonPage>
-            <IonHeader>
-                <IonToolbar>
-                    <IonTitle>Añadir un estacionamiento</IonTitle>
-                </IonToolbar>
-            </IonHeader>
-            <IonContent>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <IonItem>
-                        <IonLabel position="floating">Título</IonLabel>
-                        <IonInput {...register('titulo')} />
-                    </IonItem>
-                    <IonItem>
-                        <IonLabel position="floating">Descripción</IonLabel>
-                        <IonTextarea {...register('descripcion')} />
-                    </IonItem>
-                    <IonItem>
-                        <IonLabel position="floating">Tipo</IonLabel>
-                        <IonInput {...register('tipo')} />
-                    </IonItem>
-                    <IonItem>
-                        <IonLabel position="floating">Precio</IonLabel>
-                        <IonInput type="number" {...register('precio')} />
-                    </IonItem>
-                    <IonItem>
-                        <IonLabel position="floating">Capacidad</IonLabel>
-                        <IonInput type="number" {...register('capacidad')} />
-                    </IonItem>
-                    <IonItem>
-                        <IonLabel position="floating">Latitud</IonLabel>
-                        <IonInput type="number" {...register('latitud')} />
-                    </IonItem>
-                    <IonItem>
-                        <IonLabel position="floating">Longitud</IonLabel>
-                        <IonInput type="number" {...register('longitud')} />
-                    </IonItem>
-                    <IonItem>
-                        <IonLabel>Estado</IonLabel>
-                        <IonCheckbox {...register('estado')} />
-                    </IonItem>
+          <IonButton expand='block' type="submit">Guardar</IonButton>
 
-                    <IonItem>
-                        <IonLabel>Imágenes</IonLabel>
-                        <input type="file" accept="image/*" multiple {...register('imagenes')} />
-                    </IonItem>
-
-                    <IonButton expand='block' onClick={onSubmit} type="submit">Guardar</IonButton>
-                </form>
-            </IonContent>
-        </IonPage>
-    );
+        </form>
+      </IonContent>
+    </IonPage>
+  );
 };
 
 export default AddEstacionamientoPage;

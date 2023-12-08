@@ -1,16 +1,7 @@
+import { api } from '../environment';
 import React, { useEffect, useState } from 'react';
 import {
-  IonContent,
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonRow,
-  IonCol,
-  IonButton,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
+  IonContent, IonPage, IonHeader, IonToolbar, IonTitle, IonRow, IonCol, IonButton, IonCard, IonCardHeader, IonCardTitle,
   IonCardSubtitle,
   IonCardContent,
   IonIcon,
@@ -28,6 +19,9 @@ import './HomePage.css';
 import { Estacionamiento } from './interfaces';
 import { Geolocation } from '@ionic-native/geolocation';
 import { bicycle, document, bicycleOutline, car, carOutline, chevronDownCircle, colorPalette, globe, settings, receipt, exit } from 'ionicons/icons';
+import { set } from 'react-hook-form';
+import ParkingCard from '../components/ParkingCard';
+
 
 const currentUser: any | null = JSON.parse(localStorage.getItem('currentUser') || 'null');
 
@@ -42,11 +36,9 @@ const HomePage: React.FC<HomePageProps> = ({ history }) => {
     // Redirige a la página de agregar estacionamiento
     history.push('/add-estacionamiento');
   };
-  const API_USER_URL = 'http://127.0.0.1:8000';
-  const API_PARK_URL = 'http://127.0.0.1:8002';
   const obtenerListaEstacionamientos = async () => {
     try {
-      const response = await fetch(ubicacionUsuario?.latitud ? `${API_PARK_URL}/estacionamientos/dist/${ubicacionUsuario?.latitud}/${ubicacionUsuario?.longitud}` : `${API_PARK_URL}/estacionamientos/lista/`);
+      const response = await fetch(ubicacionUsuario?.latitud ? `${api.PARK_URL}/estacionamientos/dist/${ubicacionUsuario?.latitud}/${ubicacionUsuario?.longitud}` : `${api.PARK_URL}/estacionamientos/lista/`);
 
       if (response.ok) {
         const data = await response.json();
@@ -80,6 +72,47 @@ const HomePage: React.FC<HomePageProps> = ({ history }) => {
     window.location.href = '/';
   }
 
+  const handleHistorial = () => {
+    history.push('/historial');
+  }
+
+
+
+  const handleBooking = (estacionamientoId: number) => {
+    // Realiza acciones necesarias antes de la reserva, si es necesario
+    console.log(`Reservar estacionamiento con ID: ${estacionamientoId}`);
+
+    // Aquí puedes realizar la lógica para la reserva, por ejemplo, enviar una solicitud al servidor
+    // Puedes utilizar fetch u otra librería para realizar la solicitud al backend
+    // Por ejemplo:
+    /*
+    fetch(`URL_DEL_BACKEND/reservar/${estacionamientoId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            // Puedes incluir otros encabezados según sea necesario
+        },
+        // Puedes incluir un cuerpo (body) en la solicitud si es necesario
+        // body: JSON.stringify({}),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al realizar la reserva');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Maneja la respuesta exitosa, si es necesario
+        console.log('Reserva exitosa:', data);
+        // Puedes realizar acciones adicionales después de la reserva
+    })
+    .catch(error => {
+        // Maneja errores durante la reserva
+        console.error('Error al reservar:', error);
+    });
+    */
+  };
+
 
 
 
@@ -107,13 +140,13 @@ const HomePage: React.FC<HomePageProps> = ({ history }) => {
       <IonContent>
         <IonFab slot="fixed" vertical="top" horizontal="end" edge={true}>
           <IonFabButton>
-            <img className='fotoPerfil' src={`${API_USER_URL}/gestion/usuario/${currentUser.username}/profile-pic`} alt="" />
+            <img className='fotoPerfil' src={`${api.USER_URL}/gestion/usuario/${currentUser.username}/profile-pic`} alt="" />
           </IonFabButton>
           <IonFabList side="bottom">
             <IonFabButton>
               <IonIcon icon={settings}></IonIcon>
             </IonFabButton>
-            <IonFabButton>
+            <IonFabButton onClick={handleHistorial}>
               <IonIcon icon={receipt}></IonIcon>
             </IonFabButton>
             <IonFabButton onClick={handleLogout} >
@@ -124,43 +157,19 @@ const HomePage: React.FC<HomePageProps> = ({ history }) => {
         <IonRow className=" ">
           <IonCol>
             <div className='mapa ion-justify-content-center ion-align-items-center'>
-              <p className='ion-text-center ion-align-items-center'>Aqui debería ir el mapa jejeje</p>
+              <p className='ion-text-center ion-align-items-center text-dark'>Aqui debería ir el mapa jejeje</p>
             </div>
             {/* Botón inferior */}
-            <IonButton className='boton-inferior' shape='round' onClick={handleAddEstacionamiento}>
+            {currentUser.es_cliente === false ? <IonButton className='boton-inferior' shape='round' onClick={handleAddEstacionamiento}>
               +
-            </IonButton>
+            </IonButton> : null}
           </IonCol>
         </IonRow>
         {/* Sección inferior de la pantalla */}
         <Swiper navigation spaceBetween={20} slidesPerView={1.2} className='barraCartas'>
           {listaEstacionamientos.map((estacionamiento) => (
             <SwiperSlide key={estacionamiento.id}>
-              <IonCard>
-                <IonCardContent>
-                  <div className="direccion">
-                    <IonCardTitle>
-                      {estacionamiento.titulo}
-                    </IonCardTitle>
-                  </div>
-                  <p><span className='precio'>${estacionamiento.precio}</span> / hora</p>
-
-
-                  <div className="info">
-                    {estacionamiento.distancia && (
-                      <IonCardSubtitle>{`A ${estacionamiento.distancia} km`}</IonCardSubtitle>
-                    )}
-
-
-                    <p>
-                      <span className='iconoTipo'>{estacionamiento.tipo === 'Autos' ? <IonIcon color='primary' icon={car} /> : <IonIcon color='primary' icon={bicycle} />}</span>
-                      {estacionamiento.capacidad} {estacionamiento.capacidad <= 1 ? "espacio disponible" : "espacios disponibles"}
-                    </p>
-                  </div>
-
-                  <IonButton fill='clear'>Reservar</IonButton>
-                </IonCardContent>
-              </IonCard>
+              <ParkingCard key={estacionamiento.id} estacionamiento={estacionamiento}  onPress={() => handleBooking(estacionamiento.id)} />
             </SwiperSlide>
           ))}
         </Swiper>

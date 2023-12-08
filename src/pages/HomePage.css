@@ -1,6 +1,6 @@
 .mapa {
-    background-color: floralwhite;
-    height: calc(75vh - 120px);
+    background-color: #375f56;
+    height: calc(75vh - 150px);
     /* Resta la altura del IonHeader (60px) y IonTabs (60px) */
 
     p {
