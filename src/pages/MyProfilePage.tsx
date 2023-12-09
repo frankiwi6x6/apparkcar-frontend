@@ -1,9 +1,10 @@
 import { api } from '../environment'
 import React, { useEffect, useState } from 'react';
-import { IonContent, IonPage, IonHeader, IonToolbar, IonTitle, IonAvatar, IonLabel, IonButton, IonText, IonIcon, IonRow, IonCol, useIonAlert, IonCard, IonCardTitle, IonCardSubtitle, useIonViewWillEnter, isPlatform } from '@ionic/react';
+import { IonContent, IonPage, IonHeader, IonToolbar, IonTitle, IonAvatar, IonLabel, IonButton, IonText, IonIcon, IonRow, IonCol, useIonAlert, IonCard, IonCardTitle, IonCardSubtitle, useIonViewWillEnter, isPlatform, IonSpinner } from '@ionic/react';
 import { useParams } from 'react-router-dom';
 import './MyProfilePage.css';
 import { camera, exit, pencil } from 'ionicons/icons';
+import { Rating } from 'react-simple-star-rating';
 
 const MyProfilePage: React.FC = () => {
     const user = JSON.parse(localStorage.getItem('currentUser') ?? "{}");
@@ -16,6 +17,8 @@ const MyProfilePage: React.FC = () => {
     const [estacionamientos, setEstacionamientos] = useState<any>(null);
     const [reservas, setReservas] = useState<any>(null);
     const [presentAlert] = useIonAlert();
+
+    const [rating, setRating] = useState<number>();
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -49,7 +52,6 @@ const MyProfilePage: React.FC = () => {
             if (response.ok) {
                 const data = await response.json();
                 setCalificacion(data);
-                console.log(data);
             } else {
                 console.error('Error en la solicitud del perfil del usuario');
             }
@@ -64,7 +66,6 @@ const MyProfilePage: React.FC = () => {
             if (response.ok) {
                 const data = await response.json();
                 setEstacionamientos(data);
-                console.log(data);
             } else {
                 console.error('Error en la solicitud del perfil del usuario');
             }
@@ -84,7 +85,6 @@ const MyProfilePage: React.FC = () => {
             if (response.ok) {
                 const data = await response.json();
                 setReservas(data);
-                console.log(data);
             } else {
                 console.error('Error en la solicitud del perfil del usuario');
             }
@@ -107,7 +107,6 @@ const MyProfilePage: React.FC = () => {
                     text: 'Cancel',
                     role: 'cancel',
                     handler: () => {
-                        console.log('Cancelado');
                     },
                 },
                 {
@@ -178,21 +177,32 @@ const MyProfilePage: React.FC = () => {
                                 <IonCol>
                                     <IonTitle>Calificación</IonTitle>
                                     {calificacion && calificacion.promedio_calificacion !== null ? (
-                                        <IonTitle>{calificacion.promedio_calificacion}</IonTitle>
+                                        <div>
+                                            <IonTitle>{calificacion.promedio_calificacion}</IonTitle>
+
+                                            <Rating
+                                                onClick={() => { null }}
+                                                initialValue={calificacion.promedio_calificacion}
+                                                allowFraction={true}
+                                                allowHover={false}
+                                            /* Available Props */
+                                            />
+
+                                        </div>
                                     ) : (
-                                        <IonText>Sin calificaciones</IonText>
+                                        <IonSpinner></IonSpinner>
                                     )}
 
                                 </IonCol>
                                 <IonCol>
                                     {
-                                        user.es_cliente === true ? (
+                                        userData.es_cliente === true ? (
                                             <div>
                                                 <IonTitle>Reservas</IonTitle>
                                                 {reservas && reservas.length > 0 ? (
                                                     <IonTitle>{reservas.length}</IonTitle>
                                                 ) : (
-                                                    <IonText>Sin reservas</IonText>
+                                                    <IonSpinner></IonSpinner>
                                                 )}
                                             </div>
 
@@ -204,7 +214,7 @@ const MyProfilePage: React.FC = () => {
                                                     {estacionamientos && estacionamientos.length > 0 ? (
                                                         <IonTitle>{estacionamientos.length}</IonTitle>
                                                     ) : (
-                                                        <IonText>Sin estacionamientos</IonText>
+                                                        <IonSpinner></IonSpinner>
                                                     )}
                                                 </div>
                                             )
@@ -214,27 +224,29 @@ const MyProfilePage: React.FC = () => {
                             <IonRow>
                                 <IonCol className=''>
                                     {
-                                        user.es_cliente === true ? (
-                                            <div>
-                                                <IonTitle>Reservas Realizadas</IonTitle>
-                                                {reservas.map((reserva: any, index: number) => (
-                                                    <IonCard key={index}>
-                                                        <IonCardTitle> <strong>Reserva: </strong>{reserva.id}</IonCardTitle>
-                                                        <IonCardSubtitle> <strong>Estacionamiento: </strong>{reserva.id_estacionamiento}</IonCardSubtitle>
-                                                        <IonCardSubtitle> <strong>Inicio: </strong> {formatDate(reserva.fecha_inicio)}</IonCardSubtitle>
-                                                        <IonCardSubtitle> <strong>Fin: </strong> {reserva.fecha_fin ? formatDate(reserva.fecha_fin) : "En curso..."}</IonCardSubtitle>
-                                                        <IonCardSubtitle> <strong>Valor: </strong> ${formatPrice(calculateTotalPrice(calculateHours(reserva.fecha_inicio, reserva.fecha_fin), reserva.valor))}</IonCardSubtitle>
+                                        userData.es_cliente === true ? (
+                                            reservas.length > 0 ? (
+                                                <div>
+                                                    <IonTitle>Reservas Realizadas</IonTitle>
+                                                    {reservas.map((reserva: any, index: number) => (
+                                                        <IonCard key={index}>
+                                                            <IonCardTitle> <strong>Reserva: </strong>{reserva.id}</IonCardTitle>
+                                                            <IonCardSubtitle> <strong>Estacionamiento: </strong>{reserva.id_estacionamiento}</IonCardSubtitle>
+                                                            <IonCardSubtitle> <strong>Inicio: </strong> {formatDate(reserva.fecha_inicio)}</IonCardSubtitle>
+                                                            <IonCardSubtitle> <strong>Fin: </strong> {reserva.fecha_fin ? formatDate(reserva.fecha_fin) : "En curso..."}</IonCardSubtitle>
+                                                            <IonCardSubtitle> <strong>Valor: </strong> ${formatPrice(calculateTotalPrice(calculateHours(reserva.fecha_inicio, reserva.fecha_fin), reserva.valor))}</IonCardSubtitle>
 
-                                                    </IonCard>
+                                                        </IonCard>
 
-                                                ))}
-                                            </div>
+                                                    ))}
+                                                </div>) : (
+                                                <IonSpinner></IonSpinner>)
 
-                                        )
-
-                                            : (
+                                        ) : (
+                                            estacionamientos.length > 0 ? (
                                                 <div>
                                                     <IonTitle>Estacionamientos listados</IonTitle>
+
                                                     {estacionamientos.map((estacionamiento: any, index: number) => (
                                                         <IonCard key={index}>
                                                             <IonCardTitle><strong>Estacionamiento: </strong>{estacionamiento.id}</IonCardTitle>
@@ -242,18 +254,23 @@ const MyProfilePage: React.FC = () => {
                                                             <IonCardSubtitle><strong>Descripción: </strong>{estacionamiento.descripcion}</IonCardSubtitle>
                                                             <IonCardSubtitle><strong>Tipo: </strong>{estacionamiento.tipo}</IonCardSubtitle>
                                                             <IonCardSubtitle><strong>Capacidad disponible:</strong> {estacionamiento.capacidad}</IonCardSubtitle>
-                                                            <IonCardSubtitle><strong>Estado: </strong> {estacionamiento.estado}</IonCardSubtitle>
+                                                            <IonCardSubtitle><strong>Estado: </strong> {`${estacionamiento.estado}`}</IonCardSubtitle>
                                                         </IonCard>
 
                                                     ))}
 
+                                                </div>) : (
+                                                <div>
+                                                    <IonTitle>Cargando estacionamientos...</IonTitle>
+                                                    <IonSpinner></IonSpinner>
                                                 </div>
                                             )
+                                        )
                                     }
                                 </IonCol>
                             </IonRow>
                         </div>
-                        
+
                         {/* Fin de la seccion que quiero que sea un componente */}
                     </>
                 )

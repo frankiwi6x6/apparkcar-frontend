@@ -28,6 +28,7 @@ const ProfilePage: React.FC = () => {
     const handleRating = (rate: number) => {
         setRating(rate)
 
+        calificar(userData.id, rate);
         // other logic
     }
     useEffect(() => {
@@ -123,6 +124,67 @@ const ProfilePage: React.FC = () => {
     const calculateTotalPrice = (hours: number, pricePerHour: number) => {
         return hours * pricePerHour;
     };
+
+    const calificar = async (toUserID: string, calificacion: number) => {
+        try {
+            // Obtener calificacion del usuario actual al usuario destino
+            const response = await fetch(`${api.RATING_URL}/calificacion/${currentUser.id}/${toUserID}`);
+
+            if (response.status !== 404) {
+                const data = await response.json();
+
+                if (data.length > 0) {
+                    // Actualizar calificacion
+                    const calificacionData = data[0];
+                    calificacionData.calificacion = calificacion;
+
+                    const updateResponse = await fetch(`${api.RATING_URL}/calificacion/${calificacionData.id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(calificacionData),
+                    });
+
+                    if (updateResponse.ok) {
+                        console.log('Calificación actualizada con éxito:', calificacionData);
+                        setCalificacion(calificacionData);
+                    } else {
+                        console.error('Error al actualizar la calificacion. Detalles:', updateResponse);
+                    }
+                }
+            } else {
+                console.log("No existe calificacion, la crearemos");
+
+                // Crear calificacion
+                const calificacionData = {
+                    "id_usuario": currentUser.id,
+                    "id_calificado": toUserID,
+                    "calificacion": calificacion,
+                    "comentario": "Enviado con exito.",
+                    "fecha": new Date().toLocaleDateString()
+                };
+
+                const createResponse = await fetch(`${api.RATING_URL}/calificacion/crear/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(calificacionData),
+                });
+
+                if (createResponse.ok) {
+                    console.log('Calificación creada con éxito:', calificacionData);
+                    setCalificacion(calificacionData);
+                } else {
+                    console.error('Error al crear la calificacion. Detalles:', createResponse);
+                }
+            }
+        } catch (error) {
+            console.error('Error al realizar la calificacion. Detalles:', error);
+        }
+    };
+
     return (
         <IonPage>
             <IonHeader>
