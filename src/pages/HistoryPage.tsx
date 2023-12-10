@@ -75,8 +75,7 @@ const HistoryPage: React.FC = () => {
     };
 
     const formatReportCurrency = (value) => {
-        const options = { style: 'currency', currency: 'CLP' };
-        return new Intl.NumberFormat('es-ES', options).format(value);
+        return new Intl.NumberFormat('es-ES').format(value);
     };
 
     const generateReportPDF = (data) => {
