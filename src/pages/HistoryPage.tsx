@@ -82,7 +82,7 @@ const HistoryPage: React.FC = () => {
     
         // Agregar el título centrado y subrayado
         pdf.setFontSize(16);
-        pdf.text('Reporte ' + currentUser.nombre + ' ' + currentUser.apPaterno + ' ' + currentUser.apMaterno, pdf.internal.pageSize.width / 2, 20, { align: 'center' });
+        pdf.text('Reporte ' + currentUser.nombre + ' ' + currentUser.ApPaterno + ' ' + currentUser.ApMaterno, pdf.internal.pageSize.width / 2, 20, { align: 'center' });
         pdf.line(14, 26, pdf.internal.pageSize.width - 14, 26); // línea de subrayado
     
         // Agregar contenido
