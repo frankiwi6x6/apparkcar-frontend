@@ -8,6 +8,7 @@ import { documentOutline, documentTextOutline } from 'ionicons/icons';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import ReportButton from './ReportButton';
+import { toastController } from '@ionic/core';
 
 
 const HistoryPage: React.FC = () => {
@@ -124,6 +125,10 @@ const HistoryPage: React.FC = () => {
                 generateReportPDF(data);
             } else {
                 console.error('Error al obtener el reporte');
+                toastController.create({
+                    message: 'Usted no cuenta con información suficiente para generar un reporte',
+                    duration: 3000,
+                }).then(toast => toast.present());
             }
         } catch (error) {
             console.error('Error:', error);
