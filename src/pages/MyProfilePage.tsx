@@ -6,6 +6,30 @@ import './MyProfilePage.css';
 import { camera, exit, pencil } from 'ionicons/icons';
 import { Rating } from 'react-simple-star-rating';
 
+const NoDataMessage: React.FC = () => (
+    <div>
+        <IonText>No hay datos disponibles.</IonText>
+    </div>
+);
+
+const DelayedSpinnerAndMessage: React.FC = () => {
+    const [showSpinner, setShowSpinner] = useState(true);
+
+    useEffect(() => {
+        const timerId = setTimeout(() => {
+            setShowSpinner(false);
+        }, 3000);
+
+        return () => clearTimeout(timerId);
+    }, []);
+
+    return showSpinner ? (
+        <IonSpinner></IonSpinner>
+    ) : (
+        <NoDataMessage />
+    );
+};
+
 const MyProfilePage: React.FC = () => {
     const user = JSON.parse(localStorage.getItem('currentUser') ?? "{}");
 
@@ -145,138 +169,130 @@ const MyProfilePage: React.FC = () => {
     const calculateTotalPrice = (hours: number, pricePerHour: number) => {
         return hours * pricePerHour;
     };
+
+
     return (
-        <IonPage>
-            <IonHeader>
-                <IonToolbar>
-                    <IonTitle>{username}'s Profile</IonTitle>
-                </IonToolbar>
-            </IonHeader>
-            <IonContent className="ion-padding ion-content-center ion-text-center">
-                <IonButton className='button-logout' fill="clear" color='danger' onClick={handleLogout}>
+        <IonContent className="ion-padding ion-content-center ion-text-center">
+            <IonButton className='button-logout' fill="clear" color='danger' onClick={handleLogout}>
+                <IonIcon icon={exit} />
+            </IonButton>
+            {userData && (
+                <>
+                    <div className='my-profile-container' onClick={changeProfilePic}>
+                        <img src={userData.profile_pic_url} alt={`Perfil de ${username}`} className="profile-image" />
+                    </div>
 
-                    <IonIcon icon={exit} />
-                </IonButton>
-                {userData && (
-                    <>
-                        <div className='my-profile-container' onClick={changeProfilePic}>
-                            <img src={userData.profile_pic_url} alt={`Perfil de ${username}`} className="profile-image" />
-                        </div>
+                    <IonText className="ion-text">@{username}</IonText>
+                    <p>Email: {userData.email}</p>
+                    <p>Nombre: {userData.nombre} {userData.ApPaterno} {userData.ApMaterno} </p>
 
+                    <IonButton expand="full" className="ion-margin-top">
+                        Editar Perfil
+                    </IonButton>
 
-                        <IonText className="ion-text">@{username}</IonText>
-                        <p>Email: {userData.email}</p>
-                        <p>Nombre: {userData.nombre} {userData.ApPaterno} {userData.ApMaterno} </p>
-
-                        <IonButton expand="full" className="ion-margin-top">
-                            Editar Perfil
-                        </IonButton>
-                        {/* Inicio de la seccion que quiero que sea un componente */}
-                        <div>
-                            <IonRow>
-                                <IonCol>
-                                    <IonTitle>Calificación</IonTitle>
-                                    {calificacion && calificacion.promedio_calificacion !== null ? (
-                                        <div>
-                                            <IonTitle>{calificacion.promedio_calificacion}</IonTitle>
-
-                                            <Rating
-                                                onClick={() => { null }}
-                                                initialValue={calificacion.promedio_calificacion}
-                                                allowFraction={true}
-                                                allowHover={false}
-                                            /* Available Props */
-                                            />
-
-                                        </div>
-                                    ) : (
-                                        <IonSpinner></IonSpinner>
-                                    )}
-
-                                </IonCol>
-                                <IonCol>
-                                    {
-                                        userData.es_cliente === true ? (
-                                            <div>
-                                                <IonTitle>Reservas</IonTitle>
-                                                {reservas && reservas.length > 0 ? (
-                                                    <IonTitle>{reservas.length}</IonTitle>
-                                                ) : (
-                                                    <IonSpinner></IonSpinner>
-                                                )}
-                                            </div>
-
-                                        )
-
-                                            : (
-                                                <div>
-                                                    <IonTitle>Estacionamientos</IonTitle>
-                                                    {estacionamientos && estacionamientos.length > 0 ? (
-                                                        <IonTitle>{estacionamientos.length}</IonTitle>
-                                                    ) : (
-                                                        <IonSpinner></IonSpinner>
-                                                    )}
-                                                </div>
-                                            )
-                                    }
-                                </IonCol>
-                            </IonRow>
-                            <IonRow>
-                                <IonCol className=''>
-                                    {
-                                        userData.es_cliente === true ? (
+                    <div>
+                        <IonRow>
+                            <IonCol>
+                                <IonTitle>Calificación</IonTitle>
+                                {calificacion && calificacion.promedio_calificacion !== null ? (
+                                    <div>
+                                        <IonTitle>{calificacion.promedio_calificacion}</IonTitle>
+                                        <Rating
+                                            onClick={() => { null }}
+                                            initialValue={calificacion.promedio_calificacion}
+                                            allowFraction={true}
+                                            allowHover={false}
+                                        />
+                                    </div>
+                                ) : (
+                                    <IonSpinner></IonSpinner>
+                                )}
+                            </IonCol>
+                            <IonCol>
+                                {userData.es_cliente === true ? (
+                                    <div>
+                                        <IonTitle>Reservas</IonTitle>
+                                        {reservas ? (
                                             reservas.length > 0 ? (
-                                                <div>
-                                                    <IonTitle>Reservas Realizadas</IonTitle>
-                                                    {reservas.map((reserva: any, index: number) => (
-                                                        <IonCard key={index}>
-                                                            <IonCardTitle> <strong>Reserva: </strong>{reserva.id}</IonCardTitle>
-                                                            <IonCardSubtitle> <strong>Estacionamiento: </strong>{reserva.id_estacionamiento}</IonCardSubtitle>
-                                                            <IonCardSubtitle> <strong>Inicio: </strong> {formatDate(reserva.fecha_inicio)}</IonCardSubtitle>
-                                                            <IonCardSubtitle> <strong>Fin: </strong> {reserva.fecha_fin ? formatDate(reserva.fecha_fin) : "En curso..."}</IonCardSubtitle>
-                                                            <IonCardSubtitle> <strong>Valor: </strong> ${formatPrice(calculateTotalPrice(calculateHours(reserva.fecha_inicio, reserva.fecha_fin), reserva.valor))}</IonCardSubtitle>
-
-                                                        </IonCard>
-
-                                                    ))}
-                                                </div>) : (
-                                                <IonSpinner></IonSpinner>)
-
-                                        ) : (
-                                            estacionamientos.length > 0 ? (
-                                                <div>
-                                                    <IonTitle>Estacionamientos listados</IonTitle>
-
-                                                    {estacionamientos.map((estacionamiento: any, index: number) => (
-                                                        <IonCard key={index}>
-                                                            <IonCardTitle><strong>Estacionamiento: </strong>{estacionamiento.id}</IonCardTitle>
-                                                            <IonCardSubtitle>{estacionamiento.titulo}</IonCardSubtitle>
-                                                            <IonCardSubtitle><strong>Descripción: </strong>{estacionamiento.descripcion}</IonCardSubtitle>
-                                                            <IonCardSubtitle><strong>Tipo: </strong>{estacionamiento.tipo}</IonCardSubtitle>
-                                                            <IonCardSubtitle><strong>Capacidad disponible:</strong> {estacionamiento.capacidad}</IonCardSubtitle>
-                                                            <IonCardSubtitle><strong>Estado: </strong> {`${estacionamiento.estado}`}</IonCardSubtitle>
-                                                        </IonCard>
-
-                                                    ))}
-
-                                                </div>) : (
-                                                <div>
-                                                    <IonTitle>Cargando estacionamientos...</IonTitle>
-                                                    <IonSpinner></IonSpinner>
-                                                </div>
+                                                <IonTitle>{reservas.length}</IonTitle>
+                                            ) : (
+                                                <DelayedSpinnerAndMessage />
                                             )
+                                        ) : (
+                                            <NoDataMessage />
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <IonTitle>Estacionamientos</IonTitle>
+                                        {estacionamientos ? (
+                                            estacionamientos.length > 0 ? (
+                                                <IonTitle>{estacionamientos.length}</IonTitle>
+                                            ) : (
+                                                <DelayedSpinnerAndMessage />
+                                            )
+                                        ) : (
+                                            <NoDataMessage />
+                                        )}
+                                    </div>
+                                )}
+                            </IonCol>
+                        </IonRow>
+                        <IonRow>
+                            <IonCol className=''>
+                                {userData.es_cliente === true ? (
+                                    reservas ? (
+                                        reservas.length > 0 ? (
+                                            <div>
+                                                <IonTitle>Reservas Realizadas</IonTitle>
+                                                {reservas.map((reserva: any, index: number) => (
+                                                    <IonCard key={index}>
+                                                        <IonCardTitle> <strong>Reserva: </strong>{reserva.id}</IonCardTitle>
+                                                        <IonCardSubtitle> <strong>Estacionamiento: </strong>{reserva.id_estacionamiento}</IonCardSubtitle>
+                                                        <IonCardSubtitle> <strong>Inicio: </strong> {formatDate(reserva.fecha_inicio)}</IonCardSubtitle>
+                                                        <IonCardSubtitle> <strong>Fin: </strong> {reserva.fecha_fin ? formatDate(reserva.fecha_fin) : "En curso..."}</IonCardSubtitle>
+                                                        <IonCardSubtitle> <strong>Valor: </strong> ${formatPrice(calculateTotalPrice(calculateHours(reserva.fecha_inicio, reserva.fecha_fin), reserva.valor))}</IonCardSubtitle>
+                                                    </IonCard>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <IonSpinner></IonSpinner>
                                         )
-                                    }
-                                </IonCol>
-                            </IonRow>
-                        </div>
-
-                        {/* Fin de la seccion que quiero que sea un componente */}
-                    </>
-                )
-                }
-            </IonContent >
-        </IonPage >
+                                    ) : (
+                                        <NoDataMessage />
+                                    )
+                                ) : (
+                                    estacionamientos ? (
+                                        estacionamientos.length > 0 ? (
+                                            <div>
+                                                <IonTitle>Estacionamientos listados</IonTitle>
+                                                {estacionamientos.map((estacionamiento: any, index: number) => (
+                                                    <IonCard key={index}>
+                                                        <IonCardTitle><strong>Estacionamiento: </strong>{estacionamiento.id}</IonCardTitle>
+                                                        <IonCardSubtitle>{estacionamiento.titulo}</IonCardSubtitle>
+                                                        <IonCardSubtitle><strong>Descripción: </strong>{estacionamiento.descripcion}</IonCardSubtitle>
+                                                        <IonCardSubtitle><strong>Tipo: </strong>{estacionamiento.tipo}</IonCardSubtitle>
+                                                        <IonCardSubtitle><strong>Capacidad disponible:</strong> {estacionamiento.capacidad}</IonCardSubtitle>
+                                                        <IonCardSubtitle><strong>Estado: </strong> {`${estacionamiento.estado}`}</IonCardSubtitle>
+                                                    </IonCard>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div>
+                                                <IonTitle>Cargando estacionamientos...</IonTitle>
+                                                <IonSpinner></IonSpinner>
+                                            </div>
+                                        )
+                                    ) : (
+                                        <NoDataMessage />
+                                    )
+                                )}
+                            </IonCol>
+                        </IonRow>
+                    </div>
+                </>
+            )}
+        </IonContent>
     );
 };
 
