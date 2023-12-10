@@ -120,7 +120,7 @@ const HistoryPage: React.FC = () => {
             const response = await fetch(`${api.REPORTS_URL}/reporte/${currentUser.id}/2022-01-01`);
             if (response.ok) {
                 const data = await response.json();
-                generatePDF(data);
+                generateReportPDF(data);
                 console.log(data);
             } else {
                 console.error('Error al obtener el reporte');
