@@ -57,7 +57,6 @@ const App: React.FC = () => (
             <Route path="/tabs/home" component={HomePage} />
             <Route path="/tabs/search" component={SearchPage} />
             <Route path="/u/:username" component={ProfilePage} exact={true}/>
-            <Route path="/tabs/my-profile" component={MyProfilePage} />
           </IonRouterOutlet>
           <IonTabBar slot="bottom">
             <IonTabButton tab="tab1" href="/tabs/home">
@@ -68,7 +67,7 @@ const App: React.FC = () => (
               <IonIcon icon={search} />
               <IonLabel>Search</IonLabel>
             </IonTabButton>
-            <IonTabButton tab="tab3" href="/tabs/my-profile">
+            <IonTabButton tab="tab3" href="/u/:username">
               <IonIcon icon={person} />
               <IonLabel>Profile</IonLabel>
             </IonTabButton>
