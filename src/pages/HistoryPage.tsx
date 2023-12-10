@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { api } from '../environment';
 import { IonBackButton, IonButton, IonButtons, IonCard, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonPage, IonRow, IonTitle, IonToolbar, isPlatform } from "@ionic/react";
 import { useIonViewWillEnter } from '@ionic/react';
@@ -7,6 +7,7 @@ import { documentOutline, documentTextOutline } from 'ionicons/icons';
 
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import ReportButton from './ReportButton';
 
 
 const HistoryPage: React.FC = () => {
@@ -19,8 +20,6 @@ const HistoryPage: React.FC = () => {
     useIonViewWillEnter(() => {
         setIsSmallScreen(isPlatform('mobile') || isPlatform('tablet'));
     });
-
-    const isMounted = useRef(true);
     useEffect(() => {
         const handleReportClick = async () => {
             try {
@@ -36,20 +35,16 @@ const HistoryPage: React.FC = () => {
             }
         };
 
-        if (isMounted.current) {
-            const botonDescarga = document.getElementById('boton-documento');
-            if (botonDescarga) {
-                botonDescarga.addEventListener('click', handleReportClick);
-            }
+        // Asignar el evento onClick al botón
+        const botonDescarga = document.getElementById('boton-documento');
+        if (botonDescarga) {
+            botonDescarga.addEventListener('click', handleReportClick);
         }
 
         // Desregistrar el evento cuando el componente se desmonte
         return () => {
-            if (isMounted.current) {
-                const botonDescarga = document.getElementById('boton-documento');
-                if (botonDescarga) {
-                    botonDescarga.removeEventListener('click', handleReportClick);
-                }
+            if (botonDescarga) {
+                botonDescarga.removeEventListener('click', handleReportClick);
             }
         };
     }, [currentUser.id]);  // Asegúrate de incluir todas las dependencias necesarias en el array de dependencias
@@ -88,22 +83,22 @@ const HistoryPage: React.FC = () => {
         const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short' };
         return new Date(dateString).toLocaleDateString('es-ES', options);
     };
-
+    
     const formatReportCurrency = (value) => {
         return '$' + value.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
     };
-
+    
     const generateReportPDF = (data) => {
         const pdf = new jsPDF();
-
+    
         // Agregar el título centrado y subrayado
         pdf.setFontSize(16);
         pdf.text('Reporte ' + currentUser.nombre + ' ' + currentUser.ApPaterno + ' ' + currentUser.ApMaterno, pdf.internal.pageSize.width / 2, 20, { align: 'center' });
         pdf.line(14, 26, pdf.internal.pageSize.width - 14, 26); // línea de subrayado
-
+    
         // Agregar contenido
         pdf.setFontSize(12);
-
+    
         // Estacionamientos reservados
         pdf.text('Tus estacionamientos reservados:', 14, 40);
         const reservasData = data.reservas[0];
@@ -118,19 +113,34 @@ const HistoryPage: React.FC = () => {
             formatReportCurrency(reserva.precioFinal)
         ]);
         pdf.autoTable({ startY: 50, head: [reservaHeaders], body: reservaRows });
-
+    
         // Estacionamientos sin reservas
         pdf.text('Tus estacionamientos que no recibieron reservas:', 14, pdf.autoTable.previous.finalY + 10);
         const estacionamientosSinReservas = data.estacionamientosMenosUsados.join(', ');
         pdf.text(estacionamientosSinReservas, 14, pdf.autoTable.previous.finalY + 20);
-
+    
         // Ganancias totales
         pdf.text('Ganancias totales: ' + formatReportCurrency(data.ganancias), 14, pdf.autoTable.previous.finalY + 40);
-
+    
         // Guardar el archivo
         pdf.save('reporte.pdf');
     };
 
+    const handleReportClick = async () => {
+        try {
+            const response = await fetch(`${api.REPORTS_URL}/reporte/${currentUser.id}/2022-01-01`);
+            if (response.ok) {
+                const data = await response.json();
+                generateReportPDF(data);
+            } else {
+                console.error('Error al obtener el reporte');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    
 
     return (
         <IonPage>
@@ -177,12 +187,7 @@ const HistoryPage: React.FC = () => {
                     </IonCard>
 
                 ))}
-                {currentUser.es_cliente === false ?
-                    <IonButton id='boton-documento' shape='round' className='botonEsquinaInferior'>
-                        <IonIcon icon={documentTextOutline}></IonIcon>
-
-                    </IonButton>
-                    : null}
+                {currentUser.es_cliente === false ? <ReportButton onClick={handleReportClick} /> : null}
 
             </IonContent>
         </IonPage >
