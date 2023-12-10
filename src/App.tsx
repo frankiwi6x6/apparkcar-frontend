@@ -42,6 +42,8 @@ import HistoryPage from './pages/HistoryPage';
 setupIonicReact();
 
 
+const currentUser: any | null = JSON.parse(localStorage.getItem('currentUser') || 'null');
+
 
 const App: React.FC = () => (
   <IonApp>
@@ -67,7 +69,7 @@ const App: React.FC = () => (
               <IonIcon icon={search} />
               <IonLabel>Search</IonLabel>
             </IonTabButton>
-            <IonTabButton tab="tab3" href="/u/:username">
+            <IonTabButton tab="tab3" href="/tabs/myProfile">
               <IonIcon icon={person} />
               <IonLabel>Profile</IonLabel>
             </IonTabButton>
