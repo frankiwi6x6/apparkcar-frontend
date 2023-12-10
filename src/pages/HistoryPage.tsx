@@ -98,7 +98,7 @@ const HistoryPage: React.FC = () => {
             reserva.id_estacionamiento,
             formatReportDate(reserva.fecha_inicio),
             formatReportDate(reserva.fecha_fin),
-            `$ ${formatReportCurrency(reserva.valor)} ${reserva.estado === 'Activa'? ' (En curso)' : ''}`,
+            `$ ${formatReportCurrency(reserva.valor)} ${reserva.estado === 'Activa'? ' *' : ''}`,
             reserva.estado,
             reserva.diferencia_horas,
             `$ ${formatReportCurrency(reserva.precioFinal)}`,
