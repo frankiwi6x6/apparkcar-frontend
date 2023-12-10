@@ -12,7 +12,7 @@ import 'swiper/css/pagination';
 import './HomePage.css';
 import { Estacionamiento } from './interfaces';
 import { Geolocation } from '@ionic-native/geolocation';
-import { settings, receipt, exit } from 'ionicons/icons';
+import { settings, receipt, exit, person } from 'ionicons/icons';
 import ParkingCard from '../components/ParkingCard';
 
 
@@ -100,6 +100,10 @@ const HomePage: React.FC<HomePageProps> = ({ history }) => {
     return () => clearInterval(obtenerDatosInterval);
   }, []); // Asegúrate de ejecutar esto solo una vez al montar el componente
 
+  const handleGoToProfile = () => {
+    history.push('/tabs/my-profile');
+  }
+
   return (
     <IonPage>
       <IonHeader>
@@ -113,6 +117,10 @@ const HomePage: React.FC<HomePageProps> = ({ history }) => {
             <img className='fotoPerfil' src={`${api.USER_URL}/gestion/usuario/${currentUser.username}/profile-pic`} alt="" />
           </IonFabButton>
           <IonFabList side="bottom">
+            <IonFabButton onClick={handleGoToProfile}>
+
+              <IonIcon icon={person} />
+            </IonFabButton>
             <IonFabButton>
               <IonIcon icon={settings}></IonIcon>
             </IonFabButton>
@@ -138,9 +146,9 @@ const HomePage: React.FC<HomePageProps> = ({ history }) => {
         {/* Sección inferior de la pantalla */}
         <Swiper navigation spaceBetween={20} slidesPerView={1.2} className='barraCartas'>
           {listaEstacionamientos.map((estacionamiento) => (
-            <SwiperSlide key={estacionamiento.id} className={estacionamiento.capacidad>=1?'disponible' : 'no-disponible' } >
-              
-              <ParkingCard key={estacionamiento.id} estacionamiento={estacionamiento}/>
+            <SwiperSlide key={estacionamiento.id} className={estacionamiento.capacidad >= 1 ? 'disponible' : 'no-disponible'} >
+
+              <ParkingCard key={estacionamiento.id} estacionamiento={estacionamiento} />
             </SwiperSlide>
           ))}
         </Swiper>

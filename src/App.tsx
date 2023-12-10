@@ -68,10 +68,6 @@ const App: React.FC = () => (
               <IonIcon icon={search} />
               <IonLabel>Search</IonLabel>
             </IonTabButton>
-            <IonTabButton tab="tab3" href="/tabs/my-profile">
-              <IonIcon icon={person} />
-              <IonLabel>Profile</IonLabel>
-            </IonTabButton>
           </IonTabBar>
         </IonTabs>
       </IonRouterOutlet>
