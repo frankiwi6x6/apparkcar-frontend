@@ -4,8 +4,10 @@ import { IonBackButton, IonButton, IonButtons, IonCard, IonCardTitle, IonCol, Io
 import { useIonViewWillEnter } from '@ionic/react';
 import './HistoryPage.css';
 import { documentOutline, documentTextOutline } from 'ionicons/icons';
+
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+
 
 const HistoryPage: React.FC = () => {
     const [listaReservas, setListaReservas] = useState<any[]>([]);
@@ -65,9 +67,6 @@ const HistoryPage: React.FC = () => {
         // Aquí puedes implementar la lógica para realizar el pago, por ejemplo, redirigiendo a una pasarela de pago.
         console.log(`Pagar reserva ${reservaId}`);
     };
-
-    import jsPDF from 'jspdf';
-import 'jspdf-autotable';
 
 const generatePDF = (data) => {
     const pdf = new jsPDF();
