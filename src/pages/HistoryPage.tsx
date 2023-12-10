@@ -70,7 +70,7 @@ const HistoryPage: React.FC = () => {
     };
 
     const formatReportDate = (dateString) => {
-        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short' };
+        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'};
         return new Date(dateString).toLocaleDateString('es-ES', options);
     };
 
