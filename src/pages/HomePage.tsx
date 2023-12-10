@@ -100,10 +100,9 @@ const HomePage: React.FC<HomePageProps> = ({ history }) => {
     return () => clearInterval(obtenerDatosInterval);
   }, []); // Asegúrate de ejecutar esto solo una vez al montar el componente
 
-  const handleGoToProfile = () => {
-    history.push('/tabs/my-profile');
-  }
-
+  const handleGoToProfile = (username:string) => {
+    history.push(`/u/${username}`);
+  };
   return (
     <IonPage>
       <IonHeader>
@@ -117,7 +116,7 @@ const HomePage: React.FC<HomePageProps> = ({ history }) => {
             <img className='fotoPerfil' src={`${api.USER_URL}/gestion/usuario/${currentUser.username}/profile-pic`} alt="" />
           </IonFabButton>
           <IonFabList side="bottom">
-            <IonFabButton onClick={handleGoToProfile}>
+            <IonFabButton onClick={() => handleGoToProfile(currentUser.username)}>
 
               <IonIcon icon={person} />
             </IonFabButton>
