@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { api } from '../environment';
-import { IonBackButton, IonButton, IonButtons, IonCard, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonPage, IonRow, IonTitle, IonToolbar, isPlatform } from "@ionic/react";
+import { IonBackButton, IonButton, IonButtons, IonCard, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonPage, IonRow, IonTitle, IonToolbar, isPlatform } from "@ionic/react";
 import { useIonViewWillEnter } from '@ionic/react';
 import './HistoryPage.css';
+import { documentOutline, documentTextOutline } from 'ionicons/icons';
 
 const HistoryPage: React.FC = () => {
     const [listaReservas, setListaReservas] = useState<any[]>([]);
@@ -63,6 +64,9 @@ const HistoryPage: React.FC = () => {
         console.log(`Pagar reserva ${reservaId}`);
     };
 
+
+
+
     return (
         <IonPage>
             <IonHeader>
@@ -80,7 +84,7 @@ const HistoryPage: React.FC = () => {
                             <IonCol size='10'>
                                 <IonRow>
                                     <IonCol>
-                                        
+
                                         <p><strong>Reserva</strong></p>
 
                                         <p><strong>Estacionamiento</strong></p>
@@ -88,7 +92,7 @@ const HistoryPage: React.FC = () => {
                                         <p><strong>Inicio</strong>  </p>
 
                                         <p><strong>Fin</strong></p>
-                                        
+
                                         <p><strong>Valor</strong></p>
                                     </IonCol>
                                     <IonCol>
@@ -102,14 +106,21 @@ const HistoryPage: React.FC = () => {
 
                             </IonCol>
                             <IonCol className='ion-text-end' size='2'>
-                                <IonButton onClick={() => handlePayment(reserva.id)}>{isSmallScreen?"$" :"Pagar"}</IonButton>
+                                <IonButton onClick={() => handlePayment(reserva.id)}>{isSmallScreen ? "$" : "Pagar"}</IonButton>
                             </IonCol>
                         </IonRow>
-                    </IonCard> 
+                    </IonCard>
 
                 ))}
+                {currentUser.es_cliente === false ?
+                    <IonButton shape='round' className='botonEsquinaInferior' target="_blank" href={`http://127.0.0.1:8004/reporte/${currentUser.id}/2022-01-01`}>
+                        <IonIcon icon={documentTextOutline}></IonIcon>
+
+                    </IonButton>
+                    : null}
+
             </IonContent>
-        </IonPage>
+        </IonPage >
     );
 };
 
