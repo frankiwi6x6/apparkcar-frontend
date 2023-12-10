@@ -99,7 +99,7 @@ const HistoryPage: React.FC = () => {
             formatReportDate(reserva.fecha_inicio),
             formatReportDate(reserva.fecha_fin),
             `${reserva.estado === 'Activa'? '* ' : null}$ ${formatReportCurrency(reserva.valor)}`,
-            reserva.estado,
+            (reserva.estado.charAt(0).toUpperCase() + reserva.estado.slice(1)),
             reserva.diferencia_horas,
             `$ ${formatReportCurrency(reserva.precioFinal)}`,
         ]);
