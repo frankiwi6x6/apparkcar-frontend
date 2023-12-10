@@ -121,7 +121,6 @@ const HistoryPage: React.FC = () => {
             if (response.ok) {
                 const data = await response.json();
                 generateReportPDF(data);
-                console.log(data);
             } else {
                 console.error('Error al obtener el reporte');
             }
