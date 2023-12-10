@@ -4,7 +4,8 @@ import { IonBackButton, IonButton, IonButtons, IonCard, IonCardTitle, IonCol, Io
 import { useIonViewWillEnter } from '@ionic/react';
 import './HistoryPage.css';
 import { documentOutline, documentTextOutline } from 'ionicons/icons';
-import { PDFDocument, rgb } from 'pdf-lib';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const HistoryPage: React.FC = () => {
     const [listaReservas, setListaReservas] = useState<any[]>([]);
@@ -65,69 +66,56 @@ const HistoryPage: React.FC = () => {
         console.log(`Pagar reserva ${reservaId}`);
     };
 
+    import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
+const generatePDF = (data) => {
+    const pdf = new jsPDF();
+
+    // Agregar el título centrado y subrayado
+    pdf.setFontSize(16);
+    pdf.text('Reporte ' + currentUser.nombre + ' ' + currentUser.apPaterno + ' ' + currentUser.apMaterno, pdf.internal.pageSize.width / 2, 20, { align: 'center' });
+    pdf.line(14, 26, pdf.internal.pageSize.width - 14, 26); // línea de subrayado
+
+    // Agregar contenido
+    pdf.setFontSize(12);
+
+    // Estacionamientos reservados
+    pdf.text('Tus estacionamientos reservados:', 14, 40);
+    const reservasData = data.reservas[0];
+    const reservaHeaders = ['ID Estacionamiento', 'Fecha Inicio', 'Fecha Fin', 'Valor', 'Estado', 'Diferencia Horas', 'Precio Final'];
+    const reservaRows = reservasData.map(reserva => [reserva.id_estacionamiento, reserva.fecha_inicio, reserva.fecha_fin, reserva.valor, reserva.estado, reserva.diferencia_horas, reserva.precioFinal]);
+    pdf.autoTable({ startY: 50, head: [reservaHeaders], body: reservaRows });
+
+    // Estacionamientos sin reservas
+    pdf.text('Tus estacionamientos que no recibieron reservas:', 14, pdf.autoTable.previous.finalY + 10);
+    const estacionamientosSinReservas = data.estacionamientosMenosUsados.join(', ');
+    pdf.text(estacionamientosSinReservas, 14, pdf.autoTable.previous.finalY + 20);
+
+    // Ganancias totales
+    pdf.text('Ganancias totales: ' + data.ganancias, 14, pdf.autoTable.previous.finalY + 40);
+
+    // Guardar el archivo
+    pdf.save('reporte.pdf');
+};
+
     const handleReport = async () => {
-        const response = await fetch(`${api.REPORTS_URL}/reporte/${currentUser.id}/2022-01-01`);
-
-        if (response.ok) {
-            const data = await response.json();
-
-            // Crear un nuevo documento PDF
-            const pdfDoc = await PDFDocument.create();
-
-            // Añadir una nueva página al documento
-            const page = pdfDoc.addPage([600, 400]);
-
-            // Definir el contenido del PDF usando la información de tu JSON
-            const { reservas, estacionamientosMenosUsados, ganancias, mensaje } = data;
-
-            // Ejemplo: Agregar reservas a la página
-            page.drawText('Reservas:', { x: 50, y: 350 });
-
-            let yOffset = 330;
-            reservas[0].forEach((reserva: any) => {
-                page.drawText(`Estacionamiento ${reserva.id_estacionamiento}:`, { x: 70, y: yOffset });
-                yOffset -= 15;
-                page.drawText(`Fecha Inicio: ${reserva.fecha_inicio}`, { x: 90, y: yOffset });
-                yOffset -= 15;
-                // Agregar más detalles según tus necesidades
-                yOffset -= 20;
-            });
-
-            // Ejemplo: Agregar estacionamientos menos usados
-            page.drawText('Estacionamientos Menos Usados:', { x: 50, y: yOffset });
-            yOffset -= 20;
-            estacionamientosMenosUsados.forEach((estacionamiento: any) => {
-                page.drawText(`Estacionamiento ${estacionamiento}`, { x: 70, y: yOffset });
-                yOffset -= 15;
-            });
-
-            // Ejemplo: Agregar ganancias
-            page.drawText(`Ganancias: $${ganancias}`, { x: 50, y: yOffset });
-            yOffset -= 20;
-
-            // Ejemplo: Agregar mensaje
-            page.drawText(`Mensaje: ${mensaje}`, { x: 50, y: yOffset });
-
-            // Generar el archivo PDF
-            const pdfBytes = await pdfDoc.save();
-
-            // Crear un Blob con los bytes del PDF
-            const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
-
-            // Crear un enlace para descargar el PDF
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(pdfBlob);
-            link.download = 'reporte.pdf';
-
-            // Simular un clic en el enlace para iniciar la descarga
-            link.click();
-        } else {
-            console.error('Error al obtener el reporte');
+        try {
+            const response = await fetch(`${api.REPORTS_URL}/reporte/${currentUser.id}/2022-01-01`);
+            if (response.ok) {
+                const data = await response.json();
+                generatePDF(data);
+                console.log(data);
+            } else {
+                console.error('Error al obtener el reporte');
+            }
+        } catch (error) {
+            console.error('Error:', error);
         }
     };
 
+    // Asignar el evento onClick al botón
     const botonDescarga = document.getElementById('boton-documento');
-
     if (botonDescarga) {
         botonDescarga.addEventListener('click', handleReport);
     }
