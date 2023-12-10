@@ -4,6 +4,7 @@ import { IonBackButton, IonButton, IonButtons, IonCard, IonCardTitle, IonCol, Io
 import { useIonViewWillEnter } from '@ionic/react';
 import './HistoryPage.css';
 import { documentOutline, documentTextOutline } from 'ionicons/icons';
+import { PDFDocument, rgb } from 'pdf-lib';
 
 const HistoryPage: React.FC = () => {
     const [listaReservas, setListaReservas] = useState<any[]>([]);
@@ -64,9 +65,72 @@ const HistoryPage: React.FC = () => {
         console.log(`Pagar reserva ${reservaId}`);
     };
 
+    const handleReport = async () => {
+        const response = await fetch(`${api.REPORTS_URL}/reporte/${currentUser.id}/2022-01-01`);
 
+        if (response.ok) {
+            const data = await response.json();
 
+            // Crear un nuevo documento PDF
+            const pdfDoc = await PDFDocument.create();
 
+            // Añadir una nueva página al documento
+            const page = pdfDoc.addPage([600, 400]);
+
+            // Definir el contenido del PDF usando la información de tu JSON
+            const { reservas, estacionamientosMenosUsados, ganancias, mensaje } = data;
+
+            // Ejemplo: Agregar reservas a la página
+            page.drawText('Reservas:', { x: 50, y: 350 });
+
+            let yOffset = 330;
+            reservas[0].forEach((reserva: any) => {
+                page.drawText(`Estacionamiento ${reserva.id_estacionamiento}:`, { x: 70, y: yOffset });
+                yOffset -= 15;
+                page.drawText(`Fecha Inicio: ${reserva.fecha_inicio}`, { x: 90, y: yOffset });
+                yOffset -= 15;
+                // Agregar más detalles según tus necesidades
+                yOffset -= 20;
+            });
+
+            // Ejemplo: Agregar estacionamientos menos usados
+            page.drawText('Estacionamientos Menos Usados:', { x: 50, y: yOffset });
+            yOffset -= 20;
+            estacionamientosMenosUsados.forEach((estacionamiento: any) => {
+                page.drawText(`Estacionamiento ${estacionamiento}`, { x: 70, y: yOffset });
+                yOffset -= 15;
+            });
+
+            // Ejemplo: Agregar ganancias
+            page.drawText(`Ganancias: $${ganancias}`, { x: 50, y: yOffset });
+            yOffset -= 20;
+
+            // Ejemplo: Agregar mensaje
+            page.drawText(`Mensaje: ${mensaje}`, { x: 50, y: yOffset });
+
+            // Generar el archivo PDF
+            const pdfBytes = await pdfDoc.save();
+
+            // Crear un Blob con los bytes del PDF
+            const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+
+            // Crear un enlace para descargar el PDF
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(pdfBlob);
+            link.download = 'reporte.pdf';
+
+            // Simular un clic en el enlace para iniciar la descarga
+            link.click();
+        } else {
+            console.error('Error al obtener el reporte');
+        }
+    };
+
+    const botonDescarga = document.getElementById('boton-documento');
+
+    if (botonDescarga) {
+        botonDescarga.addEventListener('click', handleReport);
+    }
     return (
         <IonPage>
             <IonHeader>
@@ -113,7 +177,7 @@ const HistoryPage: React.FC = () => {
 
                 ))}
                 {currentUser.es_cliente === false ?
-                    <IonButton shape='round' className='botonEsquinaInferior' target="_blank" href={`http://127.0.0.1:8004/reporte/${currentUser.id}/2022-01-01`}>
+                    <IonButton id='boton-documento' shape='round' className='botonEsquinaInferior'>
                         <IonIcon icon={documentTextOutline}></IonIcon>
 
                     </IonButton>

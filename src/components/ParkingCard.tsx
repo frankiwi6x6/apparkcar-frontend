@@ -9,6 +9,7 @@ interface Props {
 const ParkingCard = ({ estacionamiento }: Props) => {
 
 
+    
 
     const handleBooking = async (estacionamientoId: number) => {
         try {
