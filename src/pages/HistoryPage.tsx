@@ -20,23 +20,33 @@ const HistoryPage: React.FC = () => {
         setIsSmallScreen(isPlatform('mobile') || isPlatform('tablet'));
     });
     useEffect(() => {
-        const fetchReservas = async () => {
+        const handleReportClick = async () => {
             try {
-                const response = await fetch(`${api.BOOKING_URL}/reserva/historial/${currentUser.id}/`);
+                const response = await fetch(`${api.REPORTS_URL}/reporte/${currentUser.id}/2022-01-01`);
                 if (response.ok) {
                     const data = await response.json();
-                    setListaReservas(data);
-                    console.log(data);
+                    generateReportPDF(data);
                 } else {
-                    console.error('Error al obtener la lista de reservas');
+                    console.error('Error al obtener el reporte');
                 }
             } catch (error) {
-                console.error('Error de red', error);
+                console.error('Error:', error);
             }
         };
 
-        fetchReservas();
-    }, [currentUser.id]);
+        // Asignar el evento onClick al botón
+        const botonDescarga = document.getElementById('boton-documento');
+        if (botonDescarga) {
+            botonDescarga.addEventListener('click', handleReportClick);
+        }
+
+        // Desregistrar el evento cuando el componente se desmonte
+        return () => {
+            if (botonDescarga) {
+                botonDescarga.removeEventListener('click', handleReportClick);
+            }
+        };
+    }, [currentUser.id]);  // Asegúrate de incluir todas las dependencias necesarias en el array de dependencias
 
     const formatDate = (dateString: string) => {
         const options = isSmallScreen
@@ -72,22 +82,22 @@ const HistoryPage: React.FC = () => {
         const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short' };
         return new Date(dateString).toLocaleDateString('es-ES', options);
     };
-    
+
     const formatReportCurrency = (value) => {
         return '$' + value.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
     };
-    
+
     const generateReportPDF = (data) => {
         const pdf = new jsPDF();
-    
+
         // Agregar el título centrado y subrayado
         pdf.setFontSize(16);
         pdf.text('Reporte ' + currentUser.nombre + ' ' + currentUser.ApPaterno + ' ' + currentUser.ApMaterno, pdf.internal.pageSize.width / 2, 20, { align: 'center' });
         pdf.line(14, 26, pdf.internal.pageSize.width - 14, 26); // línea de subrayado
-    
+
         // Agregar contenido
         pdf.setFontSize(12);
-    
+
         // Estacionamientos reservados
         pdf.text('Tus estacionamientos reservados:', 14, 40);
         const reservasData = data.reservas[0];
@@ -102,38 +112,20 @@ const HistoryPage: React.FC = () => {
             formatReportCurrency(reserva.precioFinal)
         ]);
         pdf.autoTable({ startY: 50, head: [reservaHeaders], body: reservaRows });
-    
+
         // Estacionamientos sin reservas
         pdf.text('Tus estacionamientos que no recibieron reservas:', 14, pdf.autoTable.previous.finalY + 10);
         const estacionamientosSinReservas = data.estacionamientosMenosUsados.join(', ');
         pdf.text(estacionamientosSinReservas, 14, pdf.autoTable.previous.finalY + 20);
-    
+
         // Ganancias totales
         pdf.text('Ganancias totales: ' + formatReportCurrency(data.ganancias), 14, pdf.autoTable.previous.finalY + 40);
-    
+
         // Guardar el archivo
         pdf.save('reporte.pdf');
     };
 
-    const handleReport = async () => {
-        try {
-            const response = await fetch(`${api.REPORTS_URL}/reporte/${currentUser.id}/2022-01-01`);
-            if (response.ok) {
-                const data = await response.json();
-                generateReportPDF(data);
-            } else {
-                console.error('Error al obtener el reporte');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
-
-    // Asignar el evento onClick al botón
-    const botonDescarga = document.getElementById('boton-documento');
-    if (botonDescarga) {
-        botonDescarga.addEventListener('click', handleReport);
-    }
+   
     return (
         <IonPage>
             <IonHeader>
