@@ -139,7 +139,8 @@ const HomePage: React.FC<HomePageProps> = ({ history }) => {
         <Swiper navigation spaceBetween={20} slidesPerView={1.2} className='barraCartas'>
           {listaEstacionamientos.map((estacionamiento) => (
             <SwiperSlide key={estacionamiento.id}>
-              <ParkingCard key={estacionamiento.id} estacionamiento={estacionamiento}/>
+              
+              <ParkingCard className={estacionamiento.capacidad>=1?'disponible' : 'no-disponible' } key={estacionamiento.id} estacionamiento={estacionamiento}/>
             </SwiperSlide>
           ))}
         </Swiper>

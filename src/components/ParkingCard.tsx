@@ -4,9 +4,10 @@ import { bicycle, car } from "ionicons/icons"
 
 interface Props {
     estacionamiento: any;
+    className?: string;
 }
 
-const ParkingCard = ({ estacionamiento }: Props) => {
+const ParkingCard = ({ estacionamiento, className }: Props) => {
 
 
     
@@ -82,7 +83,7 @@ const ParkingCard = ({ estacionamiento }: Props) => {
 
 
     return (
-        <IonCard>
+        <IonCard className={className}>
             <IonCardContent>
                 <div className="direccion">
                     <IonCardTitle>
