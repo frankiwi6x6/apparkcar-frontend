@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { api } from '../environment';
 import { IonBackButton, IonButton, IonButtons, IonCard, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonPage, IonRow, IonTitle, IonToolbar, isPlatform } from "@ionic/react";
 import { useIonViewWillEnter } from '@ionic/react';
@@ -19,6 +19,8 @@ const HistoryPage: React.FC = () => {
     useIonViewWillEnter(() => {
         setIsSmallScreen(isPlatform('mobile') || isPlatform('tablet'));
     });
+
+    const isMounted = useRef(true);
     useEffect(() => {
         const handleReportClick = async () => {
             try {
@@ -34,16 +36,20 @@ const HistoryPage: React.FC = () => {
             }
         };
 
-        // Asignar el evento onClick al botón
-        const botonDescarga = document.getElementById('boton-documento');
-        if (botonDescarga) {
-            botonDescarga.addEventListener('click', handleReportClick);
+        if (isMounted.current) {
+            const botonDescarga = document.getElementById('boton-documento');
+            if (botonDescarga) {
+                botonDescarga.addEventListener('click', handleReportClick);
+            }
         }
 
         // Desregistrar el evento cuando el componente se desmonte
         return () => {
-            if (botonDescarga) {
-                botonDescarga.removeEventListener('click', handleReportClick);
+            if (isMounted.current) {
+                const botonDescarga = document.getElementById('boton-documento');
+                if (botonDescarga) {
+                    botonDescarga.removeEventListener('click', handleReportClick);
+                }
             }
         };
     }, [currentUser.id]);  // Asegúrate de incluir todas las dependencias necesarias en el array de dependencias
@@ -125,7 +131,7 @@ const HistoryPage: React.FC = () => {
         pdf.save('reporte.pdf');
     };
 
-   
+
     return (
         <IonPage>
             <IonHeader>
