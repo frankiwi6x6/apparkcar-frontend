@@ -232,7 +232,7 @@ const MyProfilePage: React.FC = () => {
                                                 <DelayedSpinnerAndMessage />
                                             )
                                         ) : (
-                                            estacionamientos.detail
+                                            <NoDataMessage />
                                         )}
                                     </div>
                                 )}
@@ -290,6 +290,7 @@ const MyProfilePage: React.FC = () => {
                             </IonCol>
                         </IonRow>
                     </div>
+
                 </>
             )}
         </IonContent>
