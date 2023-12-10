@@ -68,35 +68,52 @@ const HistoryPage: React.FC = () => {
         console.log(`Pagar reserva ${reservaId}`);
     };
 
-const generatePDF = (data) => {
-    const pdf = new jsPDF();
-
-    // Agregar el título centrado y subrayado
-    pdf.setFontSize(16);
-    pdf.text('Reporte ' + currentUser.nombre + ' ' + currentUser.apPaterno + ' ' + currentUser.apMaterno, pdf.internal.pageSize.width / 2, 20, { align: 'center' });
-    pdf.line(14, 26, pdf.internal.pageSize.width - 14, 26); // línea de subrayado
-
-    // Agregar contenido
-    pdf.setFontSize(12);
-
-    // Estacionamientos reservados
-    pdf.text('Tus estacionamientos reservados:', 14, 40);
-    const reservasData = data.reservas[0];
-    const reservaHeaders = ['ID Estacionamiento', 'Fecha Inicio', 'Fecha Fin', 'Valor', 'Estado', 'Diferencia Horas', 'Precio Final'];
-    const reservaRows = reservasData.map(reserva => [reserva.id_estacionamiento, reserva.fecha_inicio, reserva.fecha_fin, reserva.valor, reserva.estado, reserva.diferencia_horas, reserva.precioFinal]);
-    pdf.autoTable({ startY: 50, head: [reservaHeaders], body: reservaRows });
-
-    // Estacionamientos sin reservas
-    pdf.text('Tus estacionamientos que no recibieron reservas:', 14, pdf.autoTable.previous.finalY + 10);
-    const estacionamientosSinReservas = data.estacionamientosMenosUsados.join(', ');
-    pdf.text(estacionamientosSinReservas, 14, pdf.autoTable.previous.finalY + 20);
-
-    // Ganancias totales
-    pdf.text('Ganancias totales: ' + data.ganancias, 14, pdf.autoTable.previous.finalY + 40);
-
-    // Guardar el archivo
-    pdf.save('reporte.pdf');
-};
+    const formatReportDate = (dateString) => {
+        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short' };
+        return new Date(dateString).toLocaleDateString('es-ES', options);
+    };
+    
+    const formatReportCurrency = (value) => {
+        return '$' + value.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    };
+    
+    const generateReportPDF = (data) => {
+        const pdf = new jsPDF();
+    
+        // Agregar el título centrado y subrayado
+        pdf.setFontSize(16);
+        pdf.text('Reporte ' + currentUser.nombre + ' ' + currentUser.apPaterno + ' ' + currentUser.apMaterno, pdf.internal.pageSize.width / 2, 20, { align: 'center' });
+        pdf.line(14, 26, pdf.internal.pageSize.width - 14, 26); // línea de subrayado
+    
+        // Agregar contenido
+        pdf.setFontSize(12);
+    
+        // Estacionamientos reservados
+        pdf.text('Tus estacionamientos reservados:', 14, 40);
+        const reservasData = data.reservas[0];
+        const reservaHeaders = ['ID Estacionamiento', 'Fecha Inicio', 'Fecha Fin', 'Valor', 'Estado', 'Diferencia Horas', 'Precio Final'];
+        const reservaRows = reservasData.map(reserva => [
+            reserva.id_estacionamiento,
+            formatReportDate(reserva.fecha_inicio),
+            formatReportDate(reserva.fecha_fin),
+            formatReportCurrency(reserva.valor),
+            reserva.estado,
+            reserva.diferencia_horas,
+            formatReportCurrency(reserva.precioFinal)
+        ]);
+        pdf.autoTable({ startY: 50, head: [reservaHeaders], body: reservaRows });
+    
+        // Estacionamientos sin reservas
+        pdf.text('Tus estacionamientos que no recibieron reservas:', 14, pdf.autoTable.previous.finalY + 10);
+        const estacionamientosSinReservas = data.estacionamientosMenosUsados.join(', ');
+        pdf.text(estacionamientosSinReservas, 14, pdf.autoTable.previous.finalY + 20);
+    
+        // Ganancias totales
+        pdf.text('Ganancias totales: ' + formatReportCurrency(data.ganancias), 14, pdf.autoTable.previous.finalY + 40);
+    
+        // Guardar el archivo
+        pdf.save('reporte.pdf');
+    };
 
     const handleReport = async () => {
         try {
