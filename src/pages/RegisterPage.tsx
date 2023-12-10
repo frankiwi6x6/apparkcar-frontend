@@ -1,6 +1,6 @@
-import {api} from '../environment'
+import { api } from '../environment'
 import React, { useEffect, useState } from 'react';
-import { IonContent, IonPage, IonHeader, IonToolbar, IonTitle, IonAvatar, IonLabel, IonButton, IonText, IonIcon, useIonAlert, IonList, IonItem, IonInput, IonCheckbox, IonRadioGroup, IonRadio } from '@ionic/react';
+import { IonContent, IonPage, IonHeader, IonToolbar, IonTitle, IonAvatar, IonLabel, IonButton, IonText, IonIcon, useIonAlert, IonList, IonItem, IonInput, IonCheckbox, IonRadioGroup, IonRadio, IonButtons, IonBackButton } from '@ionic/react';
 import { arrowBackOutline, chevronBackOutline } from 'ionicons/icons';
 import './RegisterPage.css';
 const RegisterPage: React.FC = () => {
@@ -169,10 +169,9 @@ const RegisterPage: React.FC = () => {
         <IonPage>
             <IonHeader>
                 <IonToolbar>
-                    <IonButton fill='clear' color={'dark'} onClick={handleGoBack}>
-                        <IonIcon slot="start" icon={arrowBackOutline}></IonIcon>
-                        Volver
-                    </IonButton>
+                    <IonButtons slot="start">
+                        <IonBackButton defaultHref="/"></IonBackButton>
+                    </IonButtons>
                 </IonToolbar>
             </IonHeader>
             <IonContent>
