@@ -232,7 +232,7 @@ const MyProfilePage: React.FC = () => {
                                                 <DelayedSpinnerAndMessage />
                                             )
                                         ) : (
-                                            <NoDataMessage />
+                                            estacionamientos.detail
                                         )}
                                     </div>
                                 )}
