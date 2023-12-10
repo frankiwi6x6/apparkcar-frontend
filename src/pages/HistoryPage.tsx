@@ -75,7 +75,7 @@ const HistoryPage: React.FC = () => {
     };
 
     const formatReportCurrency = (value) => {
-        return '$' + value.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        return '$' + value.replace(/\d(?=(\d{3})+\.)/g, '$&,');
     };
 
     const generateReportPDF = (data) => {
