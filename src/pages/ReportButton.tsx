@@ -1,3 +1,5 @@
+import { IonButton, IonIcon } from '@ionic/react';
+import { documentOutline } from 'ionicons/icons';
 import React, { useEffect, useRef } from 'react';
 
 const ReportButton = ({ onClick }) => {
@@ -31,9 +33,9 @@ const ReportButton = ({ onClick }) => {
     }, []);
 
     return (
-        <button id='boton-documento' onClick={onClick}>
-            Descargar Reporte
-        </button>
+        <IonButton id='boton-documento'  onClick={onClick}>
+            <IonIcon icon={documentOutline} ></IonIcon>
+        </IonButton>
     );
 };
 

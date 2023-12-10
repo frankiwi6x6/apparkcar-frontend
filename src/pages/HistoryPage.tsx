@@ -138,6 +138,11 @@ const HistoryPage: React.FC = () => {
                         <IonBackButton defaultHref="/tabs/home"></IonBackButton>
                     </IonButtons>
                     <IonTitle>Historial</IonTitle>
+
+                    {currentUser.es_cliente === false ?
+                        <IonButtons slot="end">
+                            <ReportButton onClick={handleReportClick} />
+                        </IonButtons> : null}
                 </IonToolbar>
             </IonHeader>
             <IonContent>
@@ -176,7 +181,7 @@ const HistoryPage: React.FC = () => {
 
                 ))}
                 {currentUser.es_cliente === false ?
-                    <ReportButton onClick={handleReportClick}/>
+                    <ReportButton onClick={handleReportClick} />
                     : null}
 
             </IonContent>
