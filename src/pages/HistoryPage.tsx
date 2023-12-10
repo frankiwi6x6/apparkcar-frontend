@@ -93,7 +93,7 @@ const HistoryPage: React.FC = () => {
         // Estacionamientos reservados
         pdf.text('Tus estacionamientos reservados:', 14, 40);
         const reservasData = data.reservas[0];
-        const reservaHeaders = ['ID Estacionamiento', 'Fecha Inicio', 'Fecha Fin', 'Valor', 'Estado', 'Diferencia Horas', 'Precio Final'];
+        const reservaHeaders = ['ID', 'Fecha Inicio', 'Fecha Fin', 'Valor', 'Estado', 'Horas', 'Precio Final'];
         const reservaRows = reservasData.map(reserva => [
             reserva.id_estacionamiento,
             formatReportDate(reserva.fecha_inicio),
