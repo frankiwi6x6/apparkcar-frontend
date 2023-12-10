@@ -70,7 +70,7 @@ const HistoryPage: React.FC = () => {
     };
 
     const formatReportDate = (dateString) => {
-        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'};
+        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
         return new Date(dateString).toLocaleDateString('es-ES', options);
     };
 
@@ -98,7 +98,7 @@ const HistoryPage: React.FC = () => {
             reserva.id_estacionamiento,
             formatReportDate(reserva.fecha_inicio),
             formatReportDate(reserva.fecha_fin),
-            `$ ${formatReportCurrency(reserva.valor)}`,
+            `$ ${formatReportCurrency(reserva.valor)} ${reserva.estado === 'Activa'? ' (En curso)' : ''}`,
             reserva.estado,
             reserva.diferencia_horas,
             `$ ${formatReportCurrency(reserva.precioFinal)}`,
